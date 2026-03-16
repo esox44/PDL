@@ -43,6 +43,10 @@ public abstract class Utilisateur {
 		return motDePasse;
 	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	@Override
 	public String toString() {
 		return "Utilisateur [id=" + id + ", nom=" + nom + ", prenom=" + prenom + ", identifiantConnexion="
