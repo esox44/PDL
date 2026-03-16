@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import model.*;
 
 /**
- * Classe d'acces aux donnees contenues dans la table Administrateur
+ * Classe d'acces aux donnees contenues dans la table supplier
  * 
- * @author ESIGELEC - TIC Department
+ * @author Corentin Khaled
  * @version 2.0
  * */
-public class AdministrateurDAO extends ConnectionDAO {
+public class EtudiantDAO extends ConnectionDAO {
 	/**
 	 * Constructor
 	 * 
 	 */
-	public AdministrateurDAO() {
+	public EtudiantDAO() {
 		super();
 	}
 
@@ -25,7 +25,7 @@ public class AdministrateurDAO extends ConnectionDAO {
 	 * @param supplier l'administrateur a ajouter
 	 * @return retourne le nombre de lignes ajoutees dans la table
 	 */
-	public int add(Administrateur administrateur) {
+	public int add(Etudiant etudiant) {
 		Connection con = null;
 		PreparedStatement ps = null;
 		int returnValue = 0;
@@ -38,11 +38,12 @@ public class AdministrateurDAO extends ConnectionDAO {
 			// preparation de l'instruction SQL, chaque ? represente une valeur
 			// a communiquer dans l'insertion.
 			// les getters permettent de recuperer les valeurs des attributs souhaites
-			ps = con.prepareStatement("INSERT INTO ADMINISTRATEUR(nom, prenom, identifiantConnexion, motDePasse) VALUES(?, ?, ?, ?)");
-			ps.setString(1, administrateur.getNom());
-			ps.setString(2, administrateur.getPrenom());
-			ps.setString(3, administrateur.getIdentifiantConnexion());
-			ps.setString(4, administrateur.getMotDePasse());
+			ps = con.prepareStatement("INSERT INTO Etudiant(nom, prenom, identifiantConnexion, motDePasse, promo) VALUES(?, ?, ?, ?, ?)");
+			ps.setString(1, etudiant.getNom());
+			ps.setString(2, etudiant.getPrenom());
+			ps.setString(3, etudiant.getIdentifiantConnexion());
+			ps.setString(4, etudiant.getMotDePasse());
+			ps.setString(5, Integer.toString(etudiant.getPromotion()));
 			
 			// Execution de la requete
 			returnValue = ps.executeUpdate();
@@ -56,7 +57,7 @@ public class AdministrateurDAO extends ConnectionDAO {
 					ps.close();
 					
 					// ajout de l'id à l'administrateur àjouté
-					administrateur.setId(this.getAdminSelonidentifiantConnexion(Integer.parseInt(administrateur.getIdentifiantConnexion())).getId());
+					etudiant.setId(this.getEtudiantSelonidentifiantConnexion(Integer.parseInt(etudiant.getIdentifiantConnexion())).getId());
 				}
 			} catch (Exception ignore) {
 			}
@@ -71,23 +72,23 @@ public class AdministrateurDAO extends ConnectionDAO {
 	}
 
 	/**
-	 * Permet de recuperer un administrateur a partir de sa reference
+	 * Permet de recuperer un etudiant a partir de sa reference
 	 * 
-	 * @param id de l administrateur a recuperer
-	 * @return l administrateur trouve;
-	 * 			null si aucun administrateur ne correspond a cette reference
+	 * @param id de l etudiant a recuperer
+	 * @return l etudiant trouve;
+	 * 			null si aucun etudiant ne correspond a cette reference
 	 */
-	public Administrateur getAdminSelonidAministrateur(int id) {
+	public Etudiant getEtudiantSelonidEtudiant(int id) {
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		Administrateur returnValue = null;
+		Etudiant returnValue = null;
 
 		// connexion a la base de donnees
 		try {
 
 			con = DriverManager.getConnection(URL, LOGIN, PASS);
-			ps = con.prepareStatement("SELECT * FROM ADMINISTRATEUR WHERE idAdministrateur = ?");
+			ps = con.prepareStatement("SELECT * FROM ETUDIANT WHERE idEtudiant = ?");
 			ps.setInt(1, id);
 
 			// on execute la requete
@@ -95,11 +96,12 @@ public class AdministrateurDAO extends ConnectionDAO {
 			rs = ps.executeQuery();
 			// passe a la premiere (et unique) ligne retournee
 			if (rs.next()) {
-				returnValue = new Administrateur(rs.getInt("idAdministrateur"),
+				returnValue = new Etudiant(rs.getInt("idEtudiant"),
 									       rs.getString("nom"),
 									       rs.getString("prenom"),
 									       rs.getString("identifiantConnexion"),
-									       rs.getString("motDePasse"));
+									       rs.getString("motDePasse"),
+									       rs.getInt("promo"));
 			}
 		} catch (Exception ee) {
 			ee.printStackTrace();
@@ -128,23 +130,23 @@ public class AdministrateurDAO extends ConnectionDAO {
 	}
 
 	/**
-	 * Permet de recuperer un administrateur a partir de son identifiant de connexion
+	 * Permet de recuperer un Etudiant a partir de son identifiant de connexion
 	 * 
-	 * @param identifiantConnexion de l administrateur a recuperer
+	 * @param identifiantConnexion de l etudiant a recuperer
 	 * @return l administrateur trouve;
-	 * 			null si aucun administrateur ne correspond a cette reference
+	 * 			null si aucun fournisseur ne correspond a cette reference
 	 */
-	public Administrateur getAdminSelonidentifiantConnexion(int identifiantConnexion) {
+	public Etudiant getEtudiantSelonidentifiantConnexion(int identifiantConnexion) {
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		Administrateur returnValue = null;
+		Etudiant returnValue = null;
 
 		// connexion a la base de donnees
 		try {
 
 			con = DriverManager.getConnection(URL, LOGIN, PASS);
-			ps = con.prepareStatement("SELECT * FROM ADMINISTRATEUR WHERE identifiantConnexion = ?");
+			ps = con.prepareStatement("SELECT * FROM ETUDIANT WHERE identifiantConnexion = ?");
 			ps.setInt(1, identifiantConnexion);
 
 			// on execute la requete
@@ -152,11 +154,13 @@ public class AdministrateurDAO extends ConnectionDAO {
 			rs = ps.executeQuery();
 			// passe a la premiere (et unique) ligne retournee
 			if (rs.next()) {
-				returnValue = new Administrateur(rs.getInt("idAdministrateur"),
+				returnValue = new Etudiant(rs.getInt("idEtudiant"),
 									       rs.getString("nom"),
 									       rs.getString("prenom"),
 									       rs.getString("identifiantConnexion"),
-									       rs.getString("motDePasse"));
+									       rs.getString("motDePasse"),
+									       rs.getInt("promo"));
+				
 			}
 		} catch (Exception ee) {
 			ee.printStackTrace();
@@ -195,21 +199,21 @@ public class AdministrateurDAO extends ConnectionDAO {
 	 */
 	public static void main(String[] args) throws SQLException {
 		int returnValue;
-		AdministrateurDAO administrateurDAO = new AdministrateurDAO();
+		EtudiantDAO etudiantDAO = new EtudiantDAO();
 		
 		
 		// test du constructeur
-		Administrateur administrateur = new Administrateur("Loris","soude","17","17");
+		Etudiant etudiant = new Etudiant("Djamel","Dib","32","32",2028);
 		
 		// test de la methode add
-		returnValue = administrateurDAO.add(administrateur);
-		System.out.println(returnValue + " administrateur ajoute");
+		returnValue = etudiantDAO.add(etudiant);
+		System.out.println(returnValue + " Etudiant ajoute");
 		
 		
 		// test de la methode get
 		//Administrateur administrateur2 = administrateurDAO.getAdminSelonidAministrateur(1);
 		// appel implicite de la methode toString de la classe Object (a eviter)
-		System.out.println(administrateur);
+		System.out.println(etudiant);
 		System.out.println();
 		
 		/**
@@ -225,7 +229,7 @@ public class AdministrateurDAO extends ConnectionDAO {
 		returnValue = 0;
 		for (int id : ids) {
 //			returnValue = supplierDAO.delete(id);
-			System.out.println(returnValue + " administrateur supprime");
+			System.out.println(returnValue + " fournisseur supprime");
 		}
 		*/
 		System.out.println();

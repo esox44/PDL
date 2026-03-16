@@ -2,11 +2,11 @@ package model;
 
 public abstract class Utilisateur {
 	
-	private int id;
-	private String nom; 
-	private String prenom; 
-	private String identifiantConnexion;
-	private String motDePasse;
+	protected int id;
+	protected String nom; 
+	protected String prenom; 
+	protected String identifiantConnexion;
+	protected String motDePasse;
 	
 	public Utilisateur(String nom, String prenom, String identifiantConnexion, String motDePasse) {
 		this.nom = nom;
