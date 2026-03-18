@@ -139,6 +139,65 @@ public class AdministrateurDAO extends ConnectionDAO {
 		return returnValue;
 	}
 	
+	/**
+	 * Permet de recuperer un administrateur a partir de son son identifiant de connexion et mdp
+	 * 
+	 * @param identifiantConnexion de l administrateur
+	 * @param motDePasse de l administrateur
+	 * @return l administrateur trouve;
+	 * 			null si aucun etudiant ne correspond a cette reference
+	 */
+	public Administrateur getAdministrateurConnexion(String identifiantConnexion, String motDePasse) {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Administrateur returnValue = null;
+
+		// connexion a la base de donnees
+		try {
+
+			con = DriverManager.getConnection(URL, LOGIN, PASS);
+			ps = con.prepareStatement("SELECT * FROM ADMINISTRATEUR WHERE identifiantConnexion LIKE ? AND motDePasse LIKE ?");
+			ps.setString(1, identifiantConnexion);
+			ps.setString(2, motDePasse);
+			
+			
+			// on execute la requete
+			rs = ps.executeQuery();
+			// passe a la premiere (et unique) ligne retournee
+			if (rs.next()) {
+				returnValue = new Administrateur(rs.getInt("idAdministrateur"),
+									       rs.getString("nom"),
+									       rs.getString("prenom"),
+									       rs.getString("identifiantConnexion"),
+									       rs.getString("motDePasse"));
+			}
+		} catch (Exception ee) {
+			ee.printStackTrace();
+		} finally {
+			// fermeture du ResultSet, du PreparedStatement et de la Connexion
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (Exception ignore) {
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (Exception ignore) {
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (Exception ignore) {
+			}
+		}
+		return returnValue;
+	}
+	
 	
 	/**
 	 * ATTENTION : Cette méthode n'a pas vocation à être executée lors d'une utilisation normale du programme !

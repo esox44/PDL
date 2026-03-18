@@ -6,7 +6,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import dao.AdministrateurDAO;
 import dao.EtudiantDAO;
+import model.Administrateur;
 import model.Etudiant;
 
 import java.awt.CardLayout;
@@ -94,14 +96,22 @@ public class Connexion extends JFrame {
 		JButton JButtonConnexionLogin = new JButton("Connexion");
 		JButtonConnexionLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				// TEST de connexion pour un étudiant
 				EtudiantDAO etudiantDAO = new EtudiantDAO();
 				Etudiant etudiant = etudiantDAO.getEtudiantConnexion(
-															JTextFieldConnexionLogin.getText(),
-															JTextFieldConnexionMdp.getText());	
-				if(etudiant!=null) {
-					JLabelConnexionMdpFaux.setText("Connexion réussi");
-				}else {
-					JLabelConnexionMdpFaux.setText("Login ou mdp incorrect");
+						JTextFieldConnexionLogin.getText(),
+						JTextFieldConnexionMdp.getText());	
+				
+				if(etudiant==null) {	
+					// TEST de connexion pour un administrateur
+					AdministrateurDAO administrateurDAO = new AdministrateurDAO();
+					Administrateur administrateur = administrateurDAO.getAdministrateurConnexion(
+							JTextFieldConnexionLogin.getText(),
+							JTextFieldConnexionMdp.getText());
+					if(administrateur==null) {
+						JLabelConnexionMdpFaux.setText("Connexion échouée");
+					}
 				}
 				JLabelConnexionMdpFaux.setVisible(true);
 			}
