@@ -33,20 +33,34 @@ public class AdministrateurDAO extends ConnectionDAO {
 		// connexion a la base de donnees
 		try {
 
+			int generated_Keys;
+			
 			// tentative de connexion
 			con = DriverManager.getConnection(URL, LOGIN, PASS);
-			// preparation de l'instruction SQL, chaque ? represente une valeur
-			// a communiquer dans l'insertion.
-			// les getters permettent de recuperer les valeurs des attributs souhaites
-			ps = con.prepareStatement("INSERT INTO ADMINISTRATEUR(nom, prenom, identifiantConnexion, motDePasse) VALUES(?, ?, ?, ?)");
-			ps.setString(1, administrateur.getNom());
+			
+			// 1. Préparation de l'insertion
+			String sql = "INSERT INTO ADMINISTRATEUR(nom, prenom, identifiantConnexion, motDePasse) VALUES(?, ?, ?, ?)";
+			
+			// 2. On indique à Oracle le nom de la colonne générée à nous renvoyer
+		    String[] colonnesRetournees = { "idAdministrateur" };
+		    ps = con.prepareStatement(sql, colonnesRetournees);
+			
+		    // 3. preparation de l'instruction SQL, chaque ? represente une valeur
+		    ps.setString(1, administrateur.getNom());
 			ps.setString(2, administrateur.getPrenom());
 			ps.setString(3, administrateur.getIdentifiantConnexion());
 			ps.setString(4, administrateur.getMotDePasse());
-			
-			// Execution de la requete
+		    
+			// 4. Execution de la requete
 			returnValue = ps.executeUpdate();
-
+			
+			// 5. Récupération de la clé générée
+		    try (ResultSet rs = ps.getGeneratedKeys()) {
+		        if (rs.next()) {
+		            // Ajout de l'ID directement à l'objet inscription !
+		        	administrateur.setId(rs.getInt(1));
+		        }
+		    }
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -54,9 +68,6 @@ public class AdministrateurDAO extends ConnectionDAO {
 			try {
 				if (ps != null) {
 					ps.close();
-					
-					// ajout de l'id à l'administrateur àjouté
-					administrateur.setId(this.getAdminSelonidentifiantConnexion(Integer.parseInt(administrateur.getIdentifiantConnexion())).getId());
 				}
 			} catch (Exception ignore) {
 			}
@@ -70,14 +81,15 @@ public class AdministrateurDAO extends ConnectionDAO {
 		return returnValue;
 	}
 
+	
 	/**
-	 * Permet de recuperer un administrateur a partir de sa reference
+	 * Permet de recuperer un administrateur a partir de son identifiant de connexion
 	 * 
-	 * @param id de l administrateur a recuperer
+	 * @param identifiantConnexion de l administrateur a recuperer
 	 * @return l administrateur trouve;
 	 * 			null si aucun administrateur ne correspond a cette reference
 	 */
-	public Administrateur getAdminSelonidAministrateur(int id) {
+	public Administrateur getAdministrateurSelonidAministrateur(int idAdministrateur) {
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -88,7 +100,7 @@ public class AdministrateurDAO extends ConnectionDAO {
 
 			con = DriverManager.getConnection(URL, LOGIN, PASS);
 			ps = con.prepareStatement("SELECT * FROM ADMINISTRATEUR WHERE idAdministrateur = ?");
-			ps.setInt(1, id);
+			ps.setInt(1, idAdministrateur);
 
 			// on execute la requete
 			// rs contient un pointeur situe juste avant la premiere ligne retournee
@@ -126,64 +138,6 @@ public class AdministrateurDAO extends ConnectionDAO {
 		}
 		return returnValue;
 	}
-
-	/**
-	 * Permet de recuperer un administrateur a partir de son identifiant de connexion
-	 * 
-	 * @param identifiantConnexion de l administrateur a recuperer
-	 * @return l administrateur trouve;
-	 * 			null si aucun administrateur ne correspond a cette reference
-	 */
-	public Administrateur getAdminSelonidentifiantConnexion(int identifiantConnexion) {
-		Connection con = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		Administrateur returnValue = null;
-
-		// connexion a la base de donnees
-		try {
-
-			con = DriverManager.getConnection(URL, LOGIN, PASS);
-			ps = con.prepareStatement("SELECT * FROM ADMINISTRATEUR WHERE identifiantConnexion = ?");
-			ps.setInt(1, identifiantConnexion);
-
-			// on execute la requete
-			// rs contient un pointeur situe juste avant la premiere ligne retournee
-			rs = ps.executeQuery();
-			// passe a la premiere (et unique) ligne retournee
-			if (rs.next()) {
-				returnValue = new Administrateur(rs.getInt("idAdministrateur"),
-									       rs.getString("nom"),
-									       rs.getString("prenom"),
-									       rs.getString("identifiantConnexion"),
-									       rs.getString("motDePasse"));
-			}
-		} catch (Exception ee) {
-			ee.printStackTrace();
-		} finally {
-			// fermeture du ResultSet, du PreparedStatement et de la Connexion
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-			} catch (Exception ignore) {
-			}
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (Exception ignore) {
-			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (Exception ignore) {
-			}
-		}
-		return returnValue;
-	}
-	
 	
 	
 	/**

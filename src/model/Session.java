@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -17,7 +18,7 @@ public class Session {
 	/**
 	 * date
 	 */
-	private Date date;
+	private LocalDate date;
 
 	/**
 	 * heure de debut
@@ -41,8 +42,8 @@ public class Session {
 	 * @param heureFin heure de fin
 	 * @param capacite capacite maximale
 	 */
-	public Session(Date date, String heureDebut, String heureFin, int capacite) {
-		this.date = date;
+	public Session(LocalDate date, String heureDebut, String heureFin, int capacite) {
+		this.date = LocalDate.now();
 		this.heureDebut = heureDebut;
 		this.heureFin = heureFin;
 		this.capacite = capacite;
@@ -60,8 +61,8 @@ public class Session {
 	 * getter pour l'attribut date
 	 * @return valeur de la date
 	 */
-	public Date getDate() {
-		return date;
+	public LocalDate getDate() {
+		return this.date;
 	}
 
 	/**
@@ -92,7 +93,7 @@ public class Session {
 	 * setter pour l'attribut date
 	 * @param date : nouvelle valeur de la date
 	 */
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 

@@ -33,21 +33,35 @@ public class EtudiantDAO extends ConnectionDAO {
 		// connexion a la base de donnees
 		try {
 
+			int generated_Keys;
+			
 			// tentative de connexion
 			con = DriverManager.getConnection(URL, LOGIN, PASS);
-			// preparation de l'instruction SQL, chaque ? represente une valeur
-			// a communiquer dans l'insertion.
-			// les getters permettent de recuperer les valeurs des attributs souhaites
-			ps = con.prepareStatement("INSERT INTO Etudiant(nom, prenom, identifiantConnexion, motDePasse, promo) VALUES(?, ?, ?, ?, ?)");
+			
+			// 1. Préparation de l'insertion
+		    String sql = "INSERT INTO Etudiant(nom, prenom, identifiantConnexion, motDePasse, promo) VALUES(?, ?, ?, ?, ?)";
+			
+		    // 2. On indique à Oracle le nom de la colonne générée à nous renvoyer
+		    String[] colonnesRetournees = { "idEtudiant" };
+		    ps = con.prepareStatement(sql, colonnesRetournees);
+		        
+			// 3. preparation de l'instruction SQL, chaque ? represente une valeur
 			ps.setString(1, etudiant.getNom());
 			ps.setString(2, etudiant.getPrenom());
 			ps.setString(3, etudiant.getIdentifiantConnexion());
 			ps.setString(4, etudiant.getMotDePasse());
 			ps.setString(5, Integer.toString(etudiant.getPromotion()));
 			
-			// Execution de la requete
+			// 4. Execution de la requete
 			returnValue = ps.executeUpdate();
-
+			
+			// 5. Récupération de la clé générée
+		    try (ResultSet rs = ps.getGeneratedKeys()) {
+		        if (rs.next()) {
+		            // Ajout de l'ID directement à l'objet inscription !
+		        	etudiant.setId(rs.getInt(1));
+		        }
+		    }
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -55,9 +69,6 @@ public class EtudiantDAO extends ConnectionDAO {
 			try {
 				if (ps != null) {
 					ps.close();
-					
-					// ajout de l'id à l'administrateur àjouté
-					etudiant.setId(this.getEtudiantSelonidentifiantConnexion(Integer.parseInt(etudiant.getIdentifiantConnexion())).getId());
 				}
 			} catch (Exception ignore) {
 			}
@@ -71,6 +82,7 @@ public class EtudiantDAO extends ConnectionDAO {
 		return returnValue;
 	}
 
+	
 	/**
 	 * Permet de recuperer un etudiant a partir de sa reference
 	 * 
@@ -203,7 +215,7 @@ public class EtudiantDAO extends ConnectionDAO {
 		
 		
 		// test du constructeur
-		Etudiant etudiant = new Etudiant("Djamel","Dib","32","32",2028);
+		Etudiant etudiant = new Etudiant("nom22","prenom22","idConnexion22","mdp22",2028);
 		
 		// test de la methode add
 		returnValue = etudiantDAO.add(etudiant);

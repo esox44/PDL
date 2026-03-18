@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Inscription {
@@ -8,26 +9,26 @@ public class Inscription {
 	private LocalDateTime date;
 	private int ordrePreference;
 	private String statut;
-	private Etudiant etudiant;
-	private Session session;
+	private int idEtudiant;
+	private int idSession;
 	
-	public Inscription(LocalDateTime date, int ordrePreference, String statut, Etudiant etudiant, Session session) {
+	public Inscription(LocalDateTime date, int ordrePreference, String statut, int idEtudiant, int idSession) {
 		this.date = date;
 		this.ordrePreference = ordrePreference;
 		this.statut = statut;
-		this.etudiant = etudiant;
-		this.session = session;
+		this.idEtudiant = idEtudiant;
+		this.idEtudiant = idEtudiant;
 	}
 	
-	public Inscription(int id, LocalDateTime date, int ordrePreference, String statut, Etudiant etudiant, Session session) {
+	public Inscription(int id, LocalDateTime date, int ordrePreference, String statut, int idEtudiant, int idSession) {
 		this.id = id;
 		this.date = date;
 		this.ordrePreference = ordrePreference;
 		this.statut = statut;
-		this.etudiant = etudiant;
-		this.session = session;
+		this.idEtudiant = idEtudiant;
+		this.idSession= idSession;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
@@ -40,11 +41,14 @@ public class Inscription {
 	public String getStatut() {
 		return statut;
 	}
-	public Etudiant getEtudiant() {
-		return etudiant;
+	
+
+	public int getIdEtudiant() {
+		return idEtudiant;
 	}
-	public Session getSession() {
-		return session;
+
+	public int getIdSession() {
+		return idSession;
 	}
 
 	public void setId(int id) {

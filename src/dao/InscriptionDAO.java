@@ -1,5 +1,6 @@
 package dao;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import model.*;
 
@@ -33,22 +34,35 @@ public class InscriptionDAO extends ConnectionDAO {
 		// connexion a la base de donnees
 		try {
 
+			int generated_Keys;
+			
 			// tentative de connexion
 			con = DriverManager.getConnection(URL, LOGIN, PASS);
-			int generated_Keys;
-			// preparation de l'instruction SQL, chaque ? represente une valeur
-			// a communiquer dans l'insertion.
-			// les getters permettent de recuperer les valeurs des attributs souhaites
-			ps = con.prepareStatement("INSERT INTO INSCRIPTION(dateRealisee, ordrePreference, statut, idSession, idinscription) VALUES(?, ?, ?, ?, ?)", generated_Keys);
-			ps.setObject(1, inscription.getDate());
+					
+			// 1. Préparation de l'insertion
+			String sql = "INSERT INTO INSCRIPTION(dateRealisee, ordrePreference, statut, idSession, idEtudiant) VALUES(?, ?, ?, ?, ?)";
+				
+			// 2. On indique à Oracle le nom de la colonne générée à nous renvoyer
+		    String[] colonnesRetournees = { "idInscription" };
+		    ps = con.prepareStatement(sql, colonnesRetournees);
+			 
+		    ps.setObject(1, inscription.getDate());
 			ps.setString(2, Integer.toString(inscription.getOrdrePreference()));
 			ps.setString(3, inscription.getStatut());
-			ps.setString(4, Integer.toString(inscription.getSession().getId()));
-			ps.setString(5, Integer.toString(inscription.getInscription().getId()));
-			
-			// Execution de la requete
+			ps.setString(4, Integer.toString(inscription.getIdSession()));
+			ps.setString(4, Integer.toString(inscription.getIdEtudiant()));
+			 
+			// 4. Execution de la requete
 			returnValue = ps.executeUpdate();
 
+			// 5. Récupération de la clé générée SIMPLEMENT
+		    try (ResultSet rs = ps.getGeneratedKeys()) {
+		        if (rs.next()) {
+		            // Ajout de l'ID directement à l'objet inscription !
+		            inscription.setId(rs.getInt(1));
+		        }
+		    }
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -56,9 +70,6 @@ public class InscriptionDAO extends ConnectionDAO {
 			try {
 				if (ps != null) {
 					ps.close();
-					
-					// ajout de l'id à inscription ajouté
-					inscription.setId(this.getInscriptionSelonidentifiantConnexion(Integer.parseInt(inscription.getIdentifiantConnexion())).getId());
 				}
 			} catch (Exception ignore) {
 			}
@@ -71,6 +82,7 @@ public class InscriptionDAO extends ConnectionDAO {
 		}
 		return returnValue;
 	}
+	
 
 	/**
 	 * Permet de recuperer un inscription a partir de sa reference
@@ -84,7 +96,7 @@ public class InscriptionDAO extends ConnectionDAO {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Inscription returnValue = null;
-statement.return_genereted_keys
+		
 		// connexion a la base de donnees
 		try {
 
@@ -94,74 +106,16 @@ statement.return_genereted_keys
 
 			// on execute la requete
 			// rs contient un pointeur situe juste avant la premiere ligne retournee
-			rs = ps.executeQuery();
+			rs	 = ps.executeQuery();
 			// passe a la premiere (et unique) ligne retournee
 			if (rs.next()) {
-				returnValue = new Inscription(rs.getInt("idInscription"),
-									       rs.getString("nom"),
-									       rs.getString("prenom"),
-									       rs.getString("identifiantConnexion"),
-									       rs.getString("motDePasse"),
-									       rs.getInt("promo"));
-			}
-		} catch (Exception ee) {
-			ee.printStackTrace();
-		} finally {
-			// fermeture du ResultSet, du PreparedStatement et de la Connexion
-			try {
-				if (rs != null) {
-					rs.close();
-				}
-			} catch (Exception ignore) {
-			}
-			try {
-				if (ps != null) {
-					ps.close();
-				}
-			} catch (Exception ignore) {
-			}
-			try {
-				if (con != null) {
-					con.close();
-				}
-			} catch (Exception ignore) {
-			}
-		}
-		return returnValue;
-	}
-
-	/**
-	 * Permet de recuperer un inscription a partir de son identifiant de connexion
-	 * 
-	 * @param identifiantConnexion de l inscription a recuperer
-	 * @return l administrateur trouve;
-	 * 			null si aucun fournisseur ne correspond a cette reference
-	 */
-	public Inscription getInscriptionSelonidentifiantConnexion(int identifiantConnexion) {
-		Connection con = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		Inscription returnValue = null;
-
-		// connexion a la base de donnees
-		try {
-
-			con = DriverManager.getConnection(URL, LOGIN, PASS);
-			ps = con.prepareStatement("SELECT * FROM INSCRIPTION WHERE identifiantConnexion = ?");
-			ps.setInt(1, identifiantConnexion);
-
-			// on execute la requete
-			// rs contient un pointeur situe juste avant la premiere ligne retournee
-			rs = ps.executeQuery();
-			// passe a la premiere (et unique) ligne retournee
-			if (rs.next()) {
-				returnValue = new Inscription(rs.getInt("idInscription"),
-									       rs.getString("nom"),
-									       rs.getString("prenom"),
-									       rs.getString("identifiantConnexion"),
-									       rs.getString("motDePasse"),
-									       rs.getInt("promo"));
 				
+				returnValue = new Inscription(rs.getInt("idInscription"),
+											rs.getObject("dateRealisee", java.time.LocalDateTime.class),
+											rs.getInt("ordrePreference"),
+											rs.getString("statut"),
+											rs.getInt("idEtudiant"),
+											rs.getInt("idSession"));
 			}
 		} catch (Exception ee) {
 			ee.printStackTrace();
@@ -188,7 +142,6 @@ statement.return_genereted_keys
 		}
 		return returnValue;
 	}
-	
 	
 	
 	/**
@@ -202,20 +155,8 @@ statement.return_genereted_keys
 		int returnValue;
 		InscriptionDAO inscriptionDAO = new InscriptionDAO();
 		
+		Session session = new Session(LocalDate.now(),"8h","9h",30);
 		
-		// test du constructeur
-		Inscription inscription = new Inscription("Djamel","Dib","32","32",2028);
-		
-		// test de la methode add
-		returnValue = inscriptionDAO.add(inscription);
-		System.out.println(returnValue + " Inscription ajoute");
-		
-		
-		// test de la methode get
-		//Administrateur administrateur2 = administrateurDAO.getAdminSelonidAministrateur(1);
-		// appel implicite de la methode toString de la classe Object (a eviter)
-		System.out.println(inscription);
-		System.out.println();
 		
 		/**
 		// test de la methode getList
