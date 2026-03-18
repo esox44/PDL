@@ -19,10 +19,10 @@ public class EtudiantDAO extends ConnectionDAO {
 	}
 
 	/**
-	 * Permet d'ajouter un Administrateur dans la table Administrateur.
+	 * Permet d'ajouter un Etudiant dans la table Etudiant.
 	 * Le mode est auto-commit par defaut : chaque insertion est validee
 	 * 
-	 * @param supplier l'administrateur a ajouter
+	 * @param etudiant a ajouter
 	 * @return retourne le nombre de lignes ajoutees dans la table
 	 */
 	public int add(Etudiant etudiant) {
@@ -81,6 +81,68 @@ public class EtudiantDAO extends ConnectionDAO {
 		}
 		return returnValue;
 	}
+	
+	
+	/**
+	 * Permet de recuperer un etudiant a partir de son son identifiant de connexion et mdp
+	 * 
+	 * @param identifiantConnexion de l etudiant
+	 * @param motDePasse de l etudiant
+	 * @return l etudiant trouve;
+	 * 			null si aucun etudiant ne correspond a cette reference
+	 */
+	public Etudiant getEtudiantConnexion(String identifiantConnexion, String motDePasse) {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Etudiant returnValue = null;
+
+		// connexion a la base de donnees
+		try {
+
+			con = DriverManager.getConnection(URL, LOGIN, PASS);
+			ps = con.prepareStatement("SELECT * FROM ETUDIANT WHERE identifiantConnexion LIKE ? AND motDePasse LIKE ?");
+			ps.setString(1, identifiantConnexion);
+			ps.setString(2, motDePasse);
+			
+			
+			// on execute la requete
+			rs = ps.executeQuery();
+			// passe a la premiere (et unique) ligne retournee
+			if (rs.next()) {
+				returnValue = new Etudiant(rs.getInt("idEtudiant"),
+									       rs.getString("nom"),
+									       rs.getString("prenom"),
+									       rs.getString("identifiantConnexion"),
+									       rs.getString("motDePasse"),
+									       rs.getInt("promo"));
+			}
+		} catch (Exception ee) {
+			ee.printStackTrace();
+		} finally {
+			// fermeture du ResultSet, du PreparedStatement et de la Connexion
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (Exception ignore) {
+			}
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (Exception ignore) {
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (Exception ignore) {
+			}
+		}
+		return returnValue;
+	}
+
 
 	
 	/**
@@ -213,37 +275,12 @@ public class EtudiantDAO extends ConnectionDAO {
 		int returnValue;
 		EtudiantDAO etudiantDAO = new EtudiantDAO();
 		
+		Etudiant etudiant = etudiantDAO.getEtudiantConnexion("32","32");
 		
-		// test du constructeur
-		Etudiant etudiant = new Etudiant("nom22","prenom22","idConnexion22","mdp22",2028);
-		
-		// test de la methode add
-		returnValue = etudiantDAO.add(etudiant);
-		System.out.println(returnValue + " Etudiant ajoute");
-		
-		
-		// test de la methode get
-		//Administrateur administrateur2 = administrateurDAO.getAdminSelonidAministrateur(1);
-		// appel implicite de la methode toString de la classe Object (a eviter)
 		System.out.println(etudiant);
 		System.out.println();
 		
-		/**
-		// test de la methode getList
-		ArrayList<Supplier> list = supplierDAO.getList();
-		for (Supplier s : list) {
-			// appel explicite de la methode toString de la classe Object (a privilegier)
-			System.out.println(s.toString());
-		}
-		System.out.println();
-		// test de la methode delete
-		// On supprime les 3 articles qu'on a créé
-		returnValue = 0;
-		for (int id : ids) {
-//			returnValue = supplierDAO.delete(id);
-			System.out.println(returnValue + " fournisseur supprime");
-		}
-		*/
+		
 		System.out.println();
 	}
 }

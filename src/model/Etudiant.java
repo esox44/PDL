@@ -26,4 +26,11 @@ public class Etudiant extends Utilisateur{
 	public int getPromotion() {
 		return this.promotion;
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "Etudiant [promotion=" + promotion + ", listeInscription=" + listeInscription + "]";
+	}
+	
+	
 }
