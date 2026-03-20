@@ -59,13 +59,13 @@ public class Connexion extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel JPanelConnexion = new JPanel();
+		JPanelConnexion.setBounds(96, 11, 243, 247);
 		JPanelConnexion.setBackground(new Color(248, 250, 252));
-		JPanelConnexion.setBounds(101, 11, 234, 230);
 		contentPane.add(JPanelConnexion);
 		JPanelConnexion.setLayout(null);
 		
 		JLabel JLabelConnexionIcone = new JLabel("");
-		JLabelConnexionIcone.setBounds(82, 11, 65, 53);
+		JLabelConnexionIcone.setBounds(83, 11, 65, 53);
 		JLabelConnexionIcone.setIcon(new ImageIcon("Image\\avatar.png"));
 		JPanelConnexion.add(JLabelConnexionIcone);
 		
@@ -88,12 +88,13 @@ public class Connexion extends JFrame {
 		JPanelConnexion.add(JTextFieldConnexionMdp);
 		
 		JLabel JLabelConnexionMdpFaux = new JLabel("New label");
-		JLabelConnexionMdpFaux.setDisplayedMnemonic('0');
 		JLabelConnexionMdpFaux.setBounds(10, 205, 214, 14);
+		JLabelConnexionMdpFaux.setDisplayedMnemonic('0');
 		JPanelConnexion.add(JLabelConnexionMdpFaux);
 		JLabelConnexionMdpFaux.setVisible(false);
 		
 		JButton JButtonConnexionLogin = new JButton("Connexion");
+		JButtonConnexionLogin.setBounds(56, 157, 121, 22);
 		JButtonConnexionLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -116,7 +117,6 @@ public class Connexion extends JFrame {
 				JLabelConnexionMdpFaux.setVisible(true);
 			}
 		});
-		JButtonConnexionLogin.setBounds(56, 157, 121, 22);
 		JPanelConnexion.add(JButtonConnexionLogin);
 		
 		
