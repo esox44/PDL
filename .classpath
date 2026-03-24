@@ -6,6 +6,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="Image"/>
 	<classpathentry kind="lib" path="ConfigurationBDD/lib/ojdbc7_g.jar"/>
+	<classpathentry kind="lib" path="com.miglayout.swing_11.4.2.jar"/>
+	<classpathentry kind="lib" path="com.miglayout.core_11.4.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
