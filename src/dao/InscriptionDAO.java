@@ -1,6 +1,7 @@
 package dao;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import model.*;
 
@@ -45,13 +46,16 @@ public class InscriptionDAO extends ConnectionDAO {
 			// 2. On indique à Oracle le nom de la colonne générée à nous renvoyer
 		    String[] colonnesRetournees = { "idInscription" };
 		    ps = con.prepareStatement(sql, colonnesRetournees);
-			 
-		    ps.setObject(1, inscription.getDate());
-			ps.setString(2, Integer.toString(inscription.getOrdrePreference()));
+			
+		    System.out.println("id session : " + inscription.getIdSession());
+		    System.out.println("id etudiant : " + inscription.getIdEtudiant());
+		    
+		    ps.setTimestamp(1, Timestamp.valueOf(inscription.getDate()));
+			ps.setInt(2, inscription.getOrdrePreference());
 			ps.setString(3, inscription.getStatut());
-			ps.setString(4, Integer.toString(inscription.getIdSession()));
-			ps.setString(4, Integer.toString(inscription.getIdEtudiant()));
-			 
+			ps.setInt(4, inscription.getIdSession());
+			ps.setInt(5, inscription.getIdEtudiant());
+			
 			// 4. Execution de la requete
 			returnValue = ps.executeUpdate();
 
@@ -152,28 +156,73 @@ public class InscriptionDAO extends ConnectionDAO {
 	 * @throws SQLException si une erreur se produit lors de la communication avec la BDD
 	 */
 	public static void main(String[] args) throws SQLException {
-		int returnValue;
-		InscriptionDAO inscriptionDAO = new InscriptionDAO();
+
+		System.out.println("=== DÉBUT DU TEST DE LA BASE DE DONNÉES ===");
+
+        try {
+        	/**
+            // --------------------------------------------------------
+            // ÉTAPE 1 : Création de la Campagne
+            // --------------------------------------------------------
+            CampagneDAO campagneDAO = new CampagneDAO();
+            LocalDateTime debutC = LocalDateTime.now();
+            LocalDateTime finC = debutC.plusDays(30);
+            
+            // Hypothèse sur votre constructeur (dateDebut, dateFin, nbChoixMax, promotion, statut)
+            Campagne campagne = new Campagne(debutC, finC, 5, 2025, "Création");
+            campagneDAO.ajouterCampagne(campagne);
+            System.out.println("[OK] Campagne créée avec l'ID : " + campagne.getId());
+
+            // --------------------------------------------------------
+            // ÉTAPE 2 : Création de la Dominante
+            // --------------------------------------------------------
+            DominanteDAO dominanteDAO = new DominanteDAO();
+            Dominante dominante = new Dominante("Génie Logiciel"); // L'ID 0 sera écrasé par la BDD
+            dominanteDAO.ajouterDominante(dominante);
+            System.out.println("[OK] Dominante créée avec l'ID : " + dominante.getId());
+
+            // --------------------------------------------------------
+            // ÉTAPE 3 : Création de la Session (lie Campagne + Dominante)
+            // --------------------------------------------------------
+            SessionDAO sessionDAO = new SessionDAO();
+            LocalDateTime debutS = LocalDateTime.now().plusDays(1);
+            LocalDateTime finS = debutS.plusHours(2);
+            
+            Session session = new Session(debutS, finS, 30, campagne.getId(), dominante.getId());
+            sessionDAO.ajouterSession(session);
+            System.out.println("[OK] Session créée avec l'ID : " + session.getId());
+
+            // --------------------------------------------------------
+            // ÉTAPE 4 : Création de l'Étudiant (Élève)
+            // --------------------------------------------------------
+            // /!\ Assurez-vous d'avoir créé EtudiantDAO sur le même modèle que les autres !
+            EtudiantDAO etudiantDAO = new EtudiantDAO();
+            
+            // Hypothèse de constructeur : nom, prenom, identifiant, mdp, promo
+            Etudiant etudiant = new Etudiant("Khaled", "Corentin", "ckhaled", "azerty123", 2025);
+            etudiantDAO.add(etudiant); // Pensez bien à récupérer l'ID généré dans votre DAO !
+            System.out.println("[OK] Étudiant créé avec l'ID : " + etudiant.getId());
+            
+            
+            System.out.println("id session : " + session.getId());
+		    System.out.println("id etudiant : " + etudiant.getId());
+		    
+            **/
+            // --------------------------------------------------------
+            // ÉTAPE 5 : Création de l'Inscription (lie Étudiant + Session)
+            // --------------------------------------------------------
+            InscriptionDAO inscriptionDAO = new InscriptionDAO();
+            Inscription inscription = new Inscription(LocalDateTime.now(),1,"En attente",1, 1);
+            inscriptionDAO.add(inscription);
+            System.out.println("[OK] Inscription réalisée avec succès avec l'ID : " + inscription.getId());
+
+            System.out.println("\n=== TEST TERMINÉ AVEC SUCCÈS ! ===");
+			
+        } catch (Exception e) {
+            System.err.println("\n[ERREUR] Le scénario s'est arrêté à cause de l'erreur suivante :");
+            e.printStackTrace();
+        }
+			
 		
-		Session session = new Session(LocalDate.now(),"8h","9h",30);
-		
-		
-		/**
-		// test de la methode getList
-		ArrayList<Supplier> list = supplierDAO.getList();
-		for (Supplier s : list) {
-			// appel explicite de la methode toString de la classe Object (a privilegier)
-			System.out.println(s.toString());
-		}
-		System.out.println();
-		// test de la methode delete
-		// On supprime les 3 articles qu'on a créé
-		returnValue = 0;
-		for (int id : ids) {
-//			returnValue = supplierDAO.delete(id);
-			System.out.println(returnValue + " fournisseur supprime");
-		}
-		*/
-		System.out.println();
 	}
 }
