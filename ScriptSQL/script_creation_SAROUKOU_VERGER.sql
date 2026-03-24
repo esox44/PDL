@@ -28,7 +28,8 @@ CREATE TABLE Campagne (
     dateDebut DATE NOT NULL,
     dateFin DATE NOT NULL, 
     nbChoixMax INT NOT NULL,
-    statut VARCHAR(255) NOT NULL
+    statut VARCHAR(255) NOT NULL,
+    promotion INT NOT NULL
 );
 
 CREATE TABLE Dominante (

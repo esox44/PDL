@@ -26,6 +26,14 @@ public class Dominante {
 	}
 
 	/**
+	 * getter pour l'attribut id
+	 * @return valeur de l'id
+	 */
+	public int getId() {
+		return id;
+	}
+	
+	/**
 	 * getter pour l'attribut nom
 	 * @return valeur du nom
 	 */
@@ -33,6 +41,14 @@ public class Dominante {
 		return nom;
 	}
 
+	/**
+	 * setter pour l'attribut id
+	 * @param id : nouvelle valeur de l'id
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	/**
 	 * setter pour l'attribut nom
 	 * @param nom : nouvelle valeur du nom

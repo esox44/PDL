@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -16,37 +17,64 @@ public class Session {
 	private int id;
 
 	/**
-	 * date
+	 * date heure de début
 	 */
-	private LocalDate date;
+	private LocalDateTime dateHeureDebut;
 
 	/**
-	 * heure de debut
+	 * date heure de fin
 	 */
-	private String heureDebut;
-
-	/**
-	 * heure de fin
-	 */
-	private String heureFin;
+	private LocalDateTime dateHeureFin;
 
 	/**
 	 * capacite
 	 */
 	private int capacite;
-
+	
+	/**
+	 * idCampagne
+	 */
+	private int idCampagne;
+	
+	/**
+	 * idDominante
+	 */
+	private int idDominante;
+	
 	/**
 	 * Constructor
 	 * @param date date de la session
 	 * @param heureDebut heure de debut
 	 * @param heureFin heure de fin
 	 * @param capacite capacite maximale
+	 * @param idCampagne id de la campagne de la session
+	 * @param capacite id de la dominante de la session
 	 */
-	public Session(LocalDate date, String heureDebut, String heureFin, int capacite) {
-		this.date = LocalDate.now();
-		this.heureDebut = heureDebut;
-		this.heureFin = heureFin;
+	public Session(LocalDateTime dateHeureDebut, LocalDateTime dateHeureFin, int capacite, int idCampagne, int idDominante) {
+		this.dateHeureDebut = dateHeureDebut;
+		this.dateHeureFin = dateHeureFin;
 		this.capacite = capacite;
+		this.idCampagne = idCampagne;
+		this.idDominante = idDominante;
+	}
+	
+	/**
+	 * Constructor
+	 * @param id de la session
+	 * @param date date de la session
+	 * @param heureDebut heure de debut
+	 * @param heureFin heure de fin
+	 * @param capacite capacite maximale
+	 * @param idCampagne id de la campagne de la session
+	 * @param capacite id de la dominante de la session
+	 */
+	public Session(int id, LocalDateTime dateHeureDebut, LocalDateTime dateHeureFin, int capacite, int idCampagne, int idDominante) {
+		this.id = id;
+		this.dateHeureDebut = dateHeureDebut;
+		this.dateHeureFin = dateHeureFin;
+		this.capacite = capacite;
+		this.idCampagne = idCampagne;
+		this.idDominante = idDominante;
 	}
 
 	/**
@@ -58,27 +86,19 @@ public class Session {
 	}
 
 	/**
-	 * getter pour l'attribut date
-	 * @return valeur de la date
+	 * getter pour l'attribut dateHeureDebut
+	 * @return valeur de la date heure de début
 	 */
-	public LocalDate getDate() {
-		return this.date;
+	public LocalDateTime getDateHeureDebut() {
+		return this.dateHeureDebut;
 	}
 
 	/**
-	 * getter pour l'attribut heureDebut
-	 * @return valeur de l'heure de debut
+	 * getter pour l'attribut dateHeureFin
+	 * @return valeur de la date heure de fin
 	 */
-	public String getHeureDebut() {
-		return heureDebut;
-	}
-
-	/**
-	 * getter pour l'attribut heureFin
-	 * @return valeur de l'heure de fin
-	 */
-	public String getHeureFin() {
-		return heureFin;
+	public LocalDateTime getDateHeureFin() {
+		return dateHeureFin;
 	}
 
 	/**
@@ -88,29 +108,46 @@ public class Session {
 	public int getCapacite() {
 		return capacite;
 	}
-
+	
 	/**
-	 * setter pour l'attribut date
-	 * @param date : nouvelle valeur de la date
+	 * getter pour l'attribut id Campagne
+	 * @return l'id de la campagne
 	 */
-	public void setDate(LocalDate date) {
-		this.date = date;
+	public int getIdCampagne() {
+		return idCampagne;
 	}
 
 	/**
-	 * setter pour l'attribut heureDebut
-	 * @param heureDebut : nouvelle valeur de l'heure de debut
+	 * getter pour l'attribut id Dominante
+	 * @return l'id de la dominante
 	 */
-	public void setHeureDebut(String heureDebut) {
-		this.heureDebut = heureDebut;
+	public int getIdDominante() {
+		return idDominante;
+	}
+	
+	/**
+	 * setter pour l'attribut id
+	 * @param id : nouvelle id de la session
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	
+	/**
+	 * setter pour l'attribut dateHeureDebut
+	 * @param dateHeureDebut : nouvelle valeur de la date heure de début
+	 */
+	public void setDateHeureDebut(LocalDateTime dateHeureDebut) {
+		this.dateHeureDebut = dateHeureDebut;
 	}
 
 	/**
-	 * setter pour l'attribut heureFin
-	 * @param heureFin : nouvelle valeur de l'heure de fin
+	 * setter pour l'attribut dateHeureFin
+	 * @param dateHeureFin : nouvelle valeur de la date heure de fin
 	 */
-	public void setHeureFin(String heureFin) {
-		this.heureFin = heureFin;
+	public void setDateHeureFin(LocalDateTime dateHeureFin) {
+		this.dateHeureFin = dateHeureFin;
 	}
 
 	/**
@@ -127,6 +164,10 @@ public class Session {
 	 */
 	@Override
 	public String toString() {
-		return "Session [ref : " + id + ", " + date + ", " + heureDebut + ", " + heureFin + ", " + capacite + "]";
+		return "Session [id=" + id + ", dateHeureDebut=" + dateHeureDebut + ", dateHeureFin=" + dateHeureFin
+				+ ", capacite=" + capacite + "]";
 	}
+
+	
+	
 }

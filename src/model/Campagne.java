@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -17,12 +18,12 @@ public class Campagne {
 	/**
 	 * date de debut
 	 */
-	private Date dateDebut;
+	private LocalDateTime dateDebut;
 	
 	/**
 	 * date de fin
 	 */
-	private Date dateFin;
+	private LocalDateTime dateFin;
 	
 	/**
 	 * nombre maximum de choix
@@ -37,8 +38,26 @@ public class Campagne {
 	/**
 	 * indique si la campagne est archivee
 	 */
-	private boolean estArchive;
-
+	private String statut;
+	
+	/**
+	 * Constructor
+	 * @param dateDebut date de debut de la campagne
+	 * @param dateFin date de fin de la campagne
+	 * @param nbChoixMax nombre maximum de choix
+	 * @param promotion promotion concernee
+	 * @param estArchive indique si la campagne est archivee
+	 */
+	public Campagne(LocalDateTime dateDebut, LocalDateTime dateFin, int nbChoixMax, int promotion, String statut) {
+		this.id = id;
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
+		this.nbChoixMax = nbChoixMax;
+		this.promotion = promotion;
+		this.statut = statut;
+	}
+	
+	
 	/**
 	 * Constructor
 	 * @param id identifiant de la campagne
@@ -48,13 +67,13 @@ public class Campagne {
 	 * @param promotion promotion concernee
 	 * @param estArchive indique si la campagne est archivee
 	 */
-	public Campagne(int id, Date dateDebut, Date dateFin, int nbChoixMax, int promotion, boolean estArchive) {
+	public Campagne(int id, LocalDateTime dateDebut, LocalDateTime dateFin, int nbChoixMax, int promotion, String statut) {
 		this.id = id;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.nbChoixMax = nbChoixMax;
 		this.promotion = promotion;
-		this.estArchive = estArchive;
+		this.statut = statut;
 	}
 
 	/**
@@ -69,7 +88,7 @@ public class Campagne {
 	 * getter pour l'attribut dateDebut
 	 * @return valeur de la date de debut
 	 */
-	public Date getDateDebut() {
+	public LocalDateTime getDateDebut() {
 		return dateDebut;
 	}
 
@@ -77,7 +96,7 @@ public class Campagne {
 	 * getter pour l'attribut dateFin
 	 * @return valeur de la date de fin
 	 */
-	public Date getDateFin() {
+	public LocalDateTime getDateFin() {
 		return dateFin;
 	}
 
@@ -98,19 +117,27 @@ public class Campagne {
 	}
 
 	/**
-	 * getter pour l'attribut estArchive
-	 * @return valeur indiquant si la campagne est archivee
+	 * getter pour l'attribut statut
+	 * @return valeur indiquant le statut de la campagne
 	 */
-	public boolean getEstArchive() {
-		return estArchive;
+	public String getStatut() {
+		return statut;
 	}
 
 	/**
-	 * setter pour l'attribut estArchive
-	 * @param estArchive : nouvelle valeur indiquant si la campagne est archivee
+	 * setter pour l'attribut id
+	 * @param id : nouvelle valeur indiquant l'id de la campagne
 	 */
-	public void setEstArchive(boolean estArchive) {
-		this.estArchive = estArchive;
+	public void setId(int id) {
+		this.id = id;
+	}	
+	
+	/**
+	 * setter pour l'attribut statut
+	 * @param statut : nouvelle valeur indiquant le statut de la campagne
+	 */
+	public void setStatut(String statut) {
+		this.statut = statut;
 	}
 
 	/**
@@ -121,6 +148,6 @@ public class Campagne {
 	public String toString() {
 		return "Campagne [id : " + id + ", " + dateDebut
 				+ ", " + dateFin + ", " + nbChoixMax
-				+ ", " + promotion + ", " + estArchive + "]";
+				+ ", " + promotion + ", " + statut + "]";
 	}
 }

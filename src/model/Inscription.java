@@ -17,7 +17,7 @@ public class Inscription {
 		this.ordrePreference = ordrePreference;
 		this.statut = statut;
 		this.idEtudiant = idEtudiant;
-		this.idEtudiant = idEtudiant;
+		this.idSession = idSession;
 	}
 	
 	public Inscription(int id, LocalDateTime date, int ordrePreference, String statut, int idEtudiant, int idSession) {
