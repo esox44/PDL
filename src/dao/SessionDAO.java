@@ -2,6 +2,7 @@ package dao;
 import java.sql.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.time.LocalDate;
 
 import model.*;
@@ -29,7 +30,7 @@ public class SessionDAO extends ConnectionDAO {
 	 * @param session la session à ajouter
 	 * @return retourne le nombre de lignes ajoutees dans la table
 	 */
-	public int ajouterSession(Session session) {
+	public int add(Session session) {
 		Connection con = null;
 		PreparedStatement ps = null;
 		int returnValue = 0;
@@ -171,27 +172,138 @@ public class SessionDAO extends ConnectionDAO {
 
 	    return returnValue;
 	}
+	
+	
+	/**
+	 * Permet de recuperer tous les sessions dans la table session
+	 * 
+	 * @return une ArrayList de session
+	 */
+	public ArrayList<Session> getListALL() {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<Session> returnValue = new ArrayList<Session>();
+
+		// connexion a la base de donnees
+		try {
+			con = DriverManager.getConnection(URL, LOGIN, PASS);
+			ps = con.prepareStatement("SELECT * FROM SESSIONETU ORDER BY idsession");
+
+			// on execute la requete
+			rs = ps.executeQuery();
+			// on parcourt les lignes du resultat
+			while (rs.next()) {
+				returnValue.add(new Session(rs.getInt("idsession"),
+											rs.getTimestamp("dateHeureDebut").toLocalDateTime(),
+											rs.getTimestamp("dateHeureFin").toLocalDateTime(),
+						                     rs.getInt("capacite"),
+						                     rs.getInt("idCampagne"),
+						                     rs.getInt("idSession")));
+			}
+		} catch (Exception ee) {
+			ee.printStackTrace();
+		} finally {
+			// fermeture du rs, du preparedStatement et de la connexion
+			try {
+				if (rs != null)
+					rs.close();
+			} catch (Exception ignore) {
+			}
+			try {
+				if (ps != null)
+					ps.close();
+			} catch (Exception ignore) {
+			}
+			try {
+				if (con != null)
+					con.close();
+			} catch (Exception ignore) {
+			}
+		}
+		return returnValue;
+	}
+	
+	/**
+	 * Permet de recuperer tous les sessions selon un id de campagne
+	 * 
+	 * @return une ArrayList de session
+	 */
+	public ArrayList<Session> getListSelonIdCampagne(int idCampagne) {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<Session> returnValue = new ArrayList<Session>();
+
+		// connexion a la base de donnees
+		try {
+			con = DriverManager.getConnection(URL, LOGIN, PASS);
+			ps = con.prepareStatement("SELECT * FROM SESSIONETU WHERE idDominante = ? ORDER BY idsession");
+			ps.setInt(1, idCampagne);
+			
+			// on execute la requete
+			rs = ps.executeQuery();
+			// on parcourt les lignes du resultat
+			while (rs.next()) {
+				returnValue.add(new Session(rs.getInt("idsession"),
+											rs.getTimestamp("dateHeureDebut").toLocalDateTime(),
+											rs.getTimestamp("dateHeureFin").toLocalDateTime(),
+						                    rs.getInt("capacite"),
+						                    rs.getInt("idCampagne"),
+						                    rs.getInt("idSession")));
+			}
+		} catch (Exception ee) {
+			ee.printStackTrace();
+		} finally {
+			// fermeture du rs, du preparedStatement et de la connexion
+			try {
+				if (rs != null)
+					rs.close();
+			} catch (Exception ignore) {
+			}
+			try {
+				if (ps != null)
+					ps.close();
+			} catch (Exception ignore) {
+			}
+			try {
+				if (con != null)
+					con.close();
+			} catch (Exception ignore) {
+			}
+		}
+		return returnValue;
+	}
+	
 	public static void main(String[] args) throws SQLException {
 		
 		
-		 // Date de début : 1er juin 2025 à 09:00
-        //LocalDate dateDebut = LocalDate.of(2025, 6, 1);
-       // LocalDate dateDebut1 = LocalDate.of(2025, 6, 8);
+		// Date de début : 1er juin 2025 à 09:00
+		LocalDateTime myDateObj = LocalDateTime.now();
+		myDateObj.withYear(2025);
 
         // Date de fin : 1er juillet 2025 à 17:00
-       // LocalDate dateFin = LocalDate.of(2025, 7, 1);
+       	LocalDate dateFin = LocalDate.of(2025, 7, 1);
+       	//Session session = new Session(LocalDateTime.now(),  LocalDateTime.now().plusHours(2), 30, 1, 23);
+		 
+       	SessionDAO sdao = new SessionDAO();
+       	
+		// 1 // Ajout
+        //sdao.add(session);
         
-        //Campagne campagne1 = new Campagne(12, dateDebut1, dateFin, 2025,  false);
-        //Campagne campagne = new Campagne(12, dateDebut1, dateFin, 2025,  false);
-        //Dominante dominante = new Dominante(3 , "Cyber");
-
-       // Session session = new Session(2, LocalDateTime.now(),  LocalDateTime.now().plusHours(2), 30, campagne, dominante );
-       // Session session1 = new Session(2, LocalDateTime.now(),  LocalDateTime.now().plusHours(1), 20, campagne, dominante );
+        // 2 // Updtate
+        //session.setCapacite(5);
+        //sdao.update(session);
         
-        SessionDAO sdao = new SessionDAO();
-       // sdao.ajouterSession(session);
+        // 3 // Affichage de toute
+        ArrayList<Session> listeSession = sdao.getListSelonIdCampagne(23);
+        for(Session session2 : listeSession) {
+        	System.out.println(session2);
+        }
+       	
         
-        sdao.delete(2);
+        // 4 // Delete
+        //sdao.delete(24);
 		
 	}
 	

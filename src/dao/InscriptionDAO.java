@@ -46,9 +46,6 @@ public class InscriptionDAO extends ConnectionDAO {
 			// 2. On indique à Oracle le nom de la colonne générée à nous renvoyer
 		    String[] colonnesRetournees = { "idInscription" };
 		    ps = con.prepareStatement(sql, colonnesRetournees);
-			
-		    System.out.println("id session : " + inscription.getIdSession());
-		    System.out.println("id etudiant : " + inscription.getIdEtudiant());
 		    
 		    ps.setTimestamp(1, Timestamp.valueOf(inscription.getDate()));
 			ps.setInt(2, inscription.getOrdrePreference());
@@ -87,6 +84,72 @@ public class InscriptionDAO extends ConnectionDAO {
 		return returnValue;
 	}
 	
+	/**
+	 * Permet de modifier une dominante dans la table dominante.
+	 */
+	public int update(Inscription inscription) {
+		Connection con = null;
+		PreparedStatement ps = null;
+		int returnValue = 0;
+
+		try {
+			con = DriverManager.getConnection(URL, LOGIN, PASS);
+			
+			ps = con.prepareStatement("UPDATE inscription set statut = ? WHERE idInscription = ?");
+			ps.setString(1, inscription.getStatut());
+			ps.setInt(2, inscription.getId());
+
+			returnValue = ps.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			// fermeture du preparedStatement et de la connexion
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (Exception ignore) {
+			}
+			try {
+				if (con != null) {
+					con.close();
+				}
+			} catch (Exception ignore) {}
+		}
+		return returnValue;
+	}
+	
+	/**
+	 * Permet de supprimer une inscription par id dans la table inscription.
+	 */
+	public int delete(int id) {
+		Connection con = null;
+		PreparedStatement ps = null;
+		int returnValue = 0;
+
+		try {
+			con = DriverManager.getConnection(URL, LOGIN, PASS);
+			
+			ps = con.prepareStatement("DELETE FROM inscription WHERE idInscription = ?");
+			ps.setInt(1, id);
+
+			returnValue = ps.executeUpdate();
+
+		} catch (Exception e) {
+			if (e.getMessage() != null && e.getMessage().contains("ORA-02292")) {
+				System.out.println("Cette session est référencée ailleurs, suppression impossible !"
+                        + " Supprimer d'abord les dépendances.");
+			} else {
+				e.printStackTrace();
+			}
+		} finally {
+			try { if (ps != null) ps.close(); } catch (Exception ignore) {}
+			try { if (con != null) con.close(); } catch (Exception ignore) {}
+		}
+		return returnValue;
+	}
+	
 
 	/**
 	 * Permet de recuperer un inscription a partir de sa reference
@@ -95,7 +158,7 @@ public class InscriptionDAO extends ConnectionDAO {
 	 * @return l inscription trouve;
 	 * 			null si aucun inscription ne correspond a cette reference
 	 */
-	public Inscription getInscriptionSelonidInscription(int id) {
+	public Inscription getInscription(int id) {
 		Connection con = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -147,6 +210,56 @@ public class InscriptionDAO extends ConnectionDAO {
 		return returnValue;
 	}
 	
+	/**
+	 * Permet de recuperer tous les inscriptions dans la table inscription
+	 * 
+	 * @return une ArrayList d'inscription
+	 */
+	public ArrayList<Inscription> getList() {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<Inscription> returnValue = new ArrayList<Inscription>();
+
+		// connexion a la base de donnees
+		try {
+			con = DriverManager.getConnection(URL, LOGIN, PASS);
+			ps = con.prepareStatement("SELECT * FROM inscription ORDER BY idInscription");
+
+			// on execute la requete
+			rs = ps.executeQuery();
+			// on parcourt les lignes du resultat
+			while (rs.next()) {
+				returnValue.add(new Inscription(rs.getInt("idInscription"),
+													rs.getTimestamp("dateRealisee").toLocalDateTime(),
+													rs.getInt("ordrePreference"),
+													rs.getString("statut"),
+													rs.getInt("idEtudiant"),
+													rs.getInt("idSession")));
+			}
+		} catch (Exception ee) {
+			ee.printStackTrace();
+		} finally {
+			// fermeture du rs, du preparedStatement et de la connexion
+			try {
+				if (rs != null)
+					rs.close();
+			} catch (Exception ignore) {
+			}
+			try {
+				if (ps != null)
+					ps.close();
+			} catch (Exception ignore) {
+			}
+			try {
+				if (con != null)
+					con.close();
+			} catch (Exception ignore) {
+			}
+		}
+		return returnValue;
+	}
+	
 	
 	/**
 	 * ATTENTION : Cette méthode n'a pas vocation à être executée lors d'une utilisation normale du programme !
@@ -157,71 +270,30 @@ public class InscriptionDAO extends ConnectionDAO {
 	 */
 	public static void main(String[] args) throws SQLException {
 
-		System.out.println("=== DÉBUT DU TEST DE LA BASE DE DONNÉES ===");
-
-        try {
-        	
-            // --------------------------------------------------------
-            // ÉTAPE 1 : Création de la Campagne
-            // --------------------------------------------------------
-            CampagneDAO campagneDAO = new CampagneDAO();
-            LocalDateTime debutC = LocalDateTime.now();
-            LocalDateTime finC = debutC.plusDays(30);
-            
-            // Hypothèse sur votre constructeur (dateDebut, dateFin, nbChoixMax, promotion, statut)
-            Campagne campagne = new Campagne(debutC, finC, 5, 2025, "Création");
-            campagneDAO.ajouterCampagne(campagne);
-            System.out.println("[OK] Campagne créée avec l'ID : " + campagne.getId());
-
-            // --------------------------------------------------------
-            // ÉTAPE 2 : Création de la Dominante
-            // --------------------------------------------------------
-            DominanteDAO dominanteDAO = new DominanteDAO();
-            Dominante dominante = new Dominante("Génie Logiciel"); // L'ID 0 sera écrasé par la BDD
-            dominanteDAO.ajouterDominante(dominante);
-            System.out.println("[OK] Dominante créée avec l'ID : " + dominante.getId());
-
-            // --------------------------------------------------------
-            // ÉTAPE 3 : Création de la Session (lie Campagne + Dominante)
-            // --------------------------------------------------------
-            SessionDAO sessionDAO = new SessionDAO();
-            LocalDateTime debutS = LocalDateTime.now().plusDays(1);
-            LocalDateTime finS = debutS.plusHours(2);
-            
-            Session session = new Session(debutS, finS, 30, campagne.getId(), dominante.getId());
-            sessionDAO.ajouterSession(session);
-            System.out.println("[OK] Session créée avec l'ID : " + session.getId());
-
-            // --------------------------------------------------------
-            // ÉTAPE 4 : Création de l'Étudiant (Élève)
-            // --------------------------------------------------------
-            // /!\ Assurez-vous d'avoir créé EtudiantDAO sur le même modèle que les autres !
-            EtudiantDAO etudiantDAO = new EtudiantDAO();
-            
-            // Hypothèse de constructeur : nom, prenom, identifiant, mdp, promo
-            Etudiant etudiant = new Etudiant("Khaled", "Corentin", "ckhaled", "azerty123", 2025);
-            etudiantDAO.add(etudiant); // Pensez bien à récupérer l'ID généré dans votre DAO !
-            System.out.println("[OK] Étudiant créé avec l'ID : " + etudiant.getId());
-            
-            
-            System.out.println("id session : " + session.getId());
-		    System.out.println("id etudiant : " + etudiant.getId());
-		    
-            
-            // --------------------------------------------------------
-            // ÉTAPE 5 : Création de l'Inscription (lie Étudiant + Session)
-            // --------------------------------------------------------
-            InscriptionDAO inscriptionDAO = new InscriptionDAO();
-            Inscription inscription = new Inscription(LocalDateTime.now(),1,"En attente",1, 1);
-            inscriptionDAO.add(inscription);
-            System.out.println("[OK] Inscription réalisée avec succès avec l'ID : " + inscription.getId());
-
-            System.out.println("\n=== TEST TERMINÉ AVEC SUCCÈS ! ===");
-			
-        } catch (Exception e) {
-            System.err.println("\n[ERREUR] Le scénario s'est arrêté à cause de l'erreur suivante :");
-            e.printStackTrace();
+		InscriptionDAO inscriptionDAO = new InscriptionDAO();
+		
+		LocalDateTime myDateObj = LocalDateTime.now();
+		
+		// Note : L'ID '3' sera écrasé par la base de données lors de l'insertion grâce au GENERATED BY DEFAULT.
+		Inscription inscription = new Inscription(myDateObj,1,"En attente", 21, 1); 
+		
+		// 1 // Ajout
+		//inscriptionDAO.add(inscription);
+        
+        // 2 // Updtate
+		//inscription.setId(3);
+        //inscription.setStatut("toto");
+        //inscriptionDAO.update(inscription);
+        
+        // 3 // Affichage de toute
+        /**ArrayList<Inscription> listeInscription = inscriptionDAO.getList();
+        for(Inscription inscription2 : listeInscription) {
+        	System.out.println(inscription2);
         }
+        **/
+        
+        // 4 // Delete
+		inscriptionDAO.delete(22);
 			
 		
 	}

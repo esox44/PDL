@@ -1,6 +1,5 @@
 package model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Inscription {
@@ -54,6 +53,18 @@ public class Inscription {
 	public void setId(int id) {
 		this.id = id;
 	}
+
+	public void setStatut(String statut) {
+		this.statut = statut;
+	}
+
+	@Override
+	public String toString() {
+		return "Inscription [id=" + id + ", date=" + date + ", ordrePreference=" + ordrePreference + ", statut="
+				+ statut + ", idEtudiant=" + idEtudiant + ", idSession=" + idSession + "]";
+	}
+	
+	
 	
 	
 	

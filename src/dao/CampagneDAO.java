@@ -3,6 +3,7 @@ import java.sql.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import model.*;
 
@@ -21,13 +22,13 @@ public class CampagneDAO extends ConnectionDAO {
 		super();
 	}
 	/**
-	 * Permet d'ajouter une campagne dans la table campagne.
+	 * Permet d'add une campagne dans la table campagne.
 	 * Le mode est auto-commit par defaut : chaque insertion est validee
 	 * 
-	 * @param campagne le fournisseur a ajouter
+	 * @param campagne le fournisseur a add
 	 * @return retourne le nombre de lignes ajoutees dans la table
 	 */
-	public int ajouterCampagne(Campagne campagne) {
+	public int add(Campagne campagne) {
 		Connection con = null;
 		PreparedStatement ps = null;
 		int returnValue = 0;
@@ -130,6 +131,56 @@ public class CampagneDAO extends ConnectionDAO {
 		return returnValue;
 	}
 	
+	/**
+	 * Permet de recuperer tous les dominantes dans la table dominante
+	 * 
+	 * @return une ArrayList de dominante
+	 */
+	public ArrayList<Campagne> getList() {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<Campagne> returnValue = new ArrayList<Campagne>();
+
+		// connexion a la base de donnees
+		try {
+			con = DriverManager.getConnection(URL, LOGIN, PASS);
+			ps = con.prepareStatement("SELECT * FROM campagne ORDER BY id");
+
+			// on execute la requete
+			rs = ps.executeQuery();
+			// on parcourt les lignes du resultat
+			while (rs.next()) {
+				returnValue.add(new Campagne(rs.getInt("id"),
+											rs.getTimestamp("dateDebut").toLocalDateTime(),
+											rs.getTimestamp("dateFin").toLocalDateTime(),
+											rs.getInt("nbChoixMax"),
+											rs.getInt("promotion"),
+											rs.getString("statut")));
+			}
+		} catch (Exception ee) {
+			ee.printStackTrace();
+		} finally {
+			// fermeture du rs, du preparedStatement et de la connexion
+			try {
+				if (rs != null)
+					rs.close();
+			} catch (Exception ignore) {
+			}
+			try {
+				if (ps != null)
+					ps.close();
+			} catch (Exception ignore) {
+			}
+			try {
+				if (con != null)
+					con.close();
+			} catch (Exception ignore) {
+			}
+		}
+		return returnValue;
+	}
+	
 	
 	
 	public static void main(String[] args) throws SQLException {
@@ -147,7 +198,7 @@ public class CampagneDAO extends ConnectionDAO {
 		
 		// 1. Test de l'ajout
 		Campagne campagne = new Campagne(myDateObj, myDateObj2, 7, 2025, "Création");
-		campagneDAO.ajouterCampagne(campagne);
+		campagneDAO.addCampagne(campagne);
 		System.out.println("Après ajout : " + campagne);
 		**/
 		
