@@ -49,7 +49,6 @@ public class Campagne {
 	 * @param estArchive indique si la campagne est archivee
 	 */
 	public Campagne(LocalDateTime dateDebut, LocalDateTime dateFin, int nbChoixMax, int promotion, String statut) {
-		this.id = id;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.nbChoixMax = nbChoixMax;

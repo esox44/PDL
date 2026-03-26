@@ -24,6 +24,16 @@ public class Dominante {
 	public Dominante(String nom) {
 		this.nom = nom;
 	}
+	
+	/**
+	 * Constructor
+	 * @param id identifiant de la dominante
+	 * @param nom nom de la dominante
+	 */
+	public Dominante(int id, String nom) {
+		this.id = id;
+		this.nom = nom;
+	}
 
 	/**
 	 * getter pour l'attribut id

@@ -182,7 +182,7 @@ public class SessionDAO extends ConnectionDAO {
        // LocalDate dateFin = LocalDate.of(2025, 7, 1);
         
         //Campagne campagne1 = new Campagne(12, dateDebut1, dateFin, 2025,  false);
-       // Campagne campagne = new Campagne(12, dateDebut1, dateFin, 2025,  false);
+        //Campagne campagne = new Campagne(12, dateDebut1, dateFin, 2025,  false);
         //Dominante dominante = new Dominante(3 , "Cyber");
 
        // Session session = new Session(2, LocalDateTime.now(),  LocalDateTime.now().plusHours(2), 30, campagne, dominante );

@@ -1,6 +1,5 @@
 package dao;
 import java.sql.*;
-import java.util.ArrayList;
 import model.*;
 
 /**
@@ -274,13 +273,14 @@ public class EtudiantDAO extends ConnectionDAO {
 	public static void main(String[] args) throws SQLException {
 		int returnValue;
 		EtudiantDAO etudiantDAO = new EtudiantDAO();
+		//Etudiant etudiant = etudiantDAO.getEtudiantConnexion("32","32");
+		Etudiant etudiant1 = new Etudiant("Khaled", "Sarokou", "12345", "12345", 2028);
 		
-		Etudiant etudiant = etudiantDAO.getEtudiantConnexion("32","32");
+		System.out.println(etudiant1);
 		
-		System.out.println(etudiant);
-		System.out.println();
+		etudiantDAO.add(etudiant1);
 		
+		System.out.println(etudiant1);
 		
-		System.out.println();
 	}
 }

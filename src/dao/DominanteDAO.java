@@ -1,6 +1,8 @@
 package dao;
 
 import java.sql.*;
+import java.util.ArrayList;
+
 import model.*;
 
 /**
@@ -136,6 +138,52 @@ public class DominanteDAO extends ConnectionDAO {
 		} finally {
 			try { if (ps != null) ps.close(); } catch (Exception ignore) {}
 			try { if (con != null) con.close(); } catch (Exception ignore) {}
+		}
+		return returnValue;
+	}
+	
+	/**
+	 * Permet de recuperer tous les dominantes dans la table dominante
+	 * 
+	 * @return une ArrayList de dominante
+	 */
+	public ArrayList<Dominante> getList() {
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		ArrayList<Dominante> returnValue = new ArrayList<Dominante>();
+
+		// connexion a la base de donnees
+		try {
+			con = DriverManager.getConnection(URL, LOGIN, PASS);
+			ps = con.prepareStatement("SELECT * FROM dominante ORDER BY id");
+
+			// on execute la requete
+			rs = ps.executeQuery();
+			// on parcourt les lignes du resultat
+			while (rs.next()) {
+				returnValue.add(new Dominante(rs.getInt("id"),
+						                     rs.getString("nom")));
+			}
+		} catch (Exception ee) {
+			ee.printStackTrace();
+		} finally {
+			// fermeture du rs, du preparedStatement et de la connexion
+			try {
+				if (rs != null)
+					rs.close();
+			} catch (Exception ignore) {
+			}
+			try {
+				if (ps != null)
+					ps.close();
+			} catch (Exception ignore) {
+			}
+			try {
+				if (con != null)
+					con.close();
+			} catch (Exception ignore) {
+			}
 		}
 		return returnValue;
 	}

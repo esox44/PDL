@@ -160,7 +160,7 @@ public class InscriptionDAO extends ConnectionDAO {
 		System.out.println("=== DÉBUT DU TEST DE LA BASE DE DONNÉES ===");
 
         try {
-        	/**
+        	
             // --------------------------------------------------------
             // ÉTAPE 1 : Création de la Campagne
             // --------------------------------------------------------
@@ -207,7 +207,7 @@ public class InscriptionDAO extends ConnectionDAO {
             System.out.println("id session : " + session.getId());
 		    System.out.println("id etudiant : " + etudiant.getId());
 		    
-            **/
+            
             // --------------------------------------------------------
             // ÉTAPE 5 : Création de l'Inscription (lie Étudiant + Session)
             // --------------------------------------------------------
