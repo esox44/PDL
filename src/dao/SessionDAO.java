@@ -296,7 +296,7 @@ public class SessionDAO extends ConnectionDAO {
         //sdao.update(session);
         
         // 3 // Affichage de toute
-        ArrayList<Session> listeSession = sdao.getListSelonIdCampagne(23);
+        ArrayList<Session> listeSession = sdao.getListSelonIdCampagne(21);
         for(Session session2 : listeSession) {
         	System.out.println(session2);
         }
